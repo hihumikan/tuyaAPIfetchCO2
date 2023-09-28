@@ -1,10 +1,23 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 )
+
+type AccessTokenResponse struct {
+	Result struct {
+		AccessToken  string `json:"access_token"`
+		ExpireTime   int    `json:"expire_time"`
+		RefreshToken string `json:"refresh_token"`
+		UID          string `json:"uid"`
+	} `json:"result"`
+	Success bool   `json:"success"`
+	T       int    `json:"t"`
+	TID     string `json:"tid"`
+}
 
 func main() {
 
@@ -37,5 +50,14 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(string(body))
+
+	var response AccessTokenResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	accessToken := response.Result.AccessToken
+	fmt.Println("アクセストークン:", accessToken)
 }
